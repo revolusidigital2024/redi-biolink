@@ -121,6 +121,37 @@ type Profile = {
   hoverAnimation: 'translate' | 'scale' | 'wiggle' | 'glow';
 };
 
+const SortableLinkItem = React.memo(({ link, index, children }: { link: LinkItem, index: number, children: React.ReactNode }) => {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging
+  } = useSortable({ id: link.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    zIndex: isDragging ? 50 : 'auto',
+    opacity: isDragging ? 0.5 : 1,
+  };
+
+  return (
+    <div ref={setNodeRef} style={style} className="relative group">
+      <div 
+        {...attributes} 
+        {...listeners}
+        className="absolute left-1.5 top-1/2 -translate-y-1/2 p-1.5 text-gray-400 hover:text-blue-600 cursor-grab active:cursor-grabbing z-20 opacity-60 group-hover:opacity-100 transition-all"
+      >
+        <GripVertical size={22} />
+      </div>
+      {children}
+    </div>
+  );
+});
+
 export default function App() {
   const [activeTab, setActiveTab] = useState<'profile' | 'links' | 'design' | 'settings' | 'projects'>('links');
   const [showCode, setShowCode] = useState(false);
@@ -402,37 +433,6 @@ export default function App() {
       coordinateGetter: sortableKeyboardCoordinates,
     })
   );
-
-  function SortableLinkItem({ link, index, children }: { link: LinkItem, index: number, children: React.ReactNode, key?: string | number }) {
-    const {
-      attributes,
-      listeners,
-      setNodeRef,
-      transform,
-      transition,
-      isDragging
-    } = useSortable({ id: link.id });
-
-    const style = {
-      transform: CSS.Transform.toString(transform),
-      transition,
-      zIndex: isDragging ? 50 : 'auto',
-      opacity: isDragging ? 0.5 : 1,
-    };
-
-    return (
-      <div ref={setNodeRef} style={style} className="relative group">
-        <div 
-          {...attributes} 
-          {...listeners}
-          className="absolute left-1.5 top-1/2 -translate-y-1/2 p-1.5 text-gray-400 hover:text-blue-600 cursor-grab active:cursor-grabbing z-20 opacity-60 group-hover:opacity-100 transition-all"
-        >
-          <GripVertical size={22} />
-        </div>
-        {children}
-      </div>
-    );
-  }
 
   const handleUpdateLink = (id: string, field: keyof LinkItem, value: string) => {
     setLinks(links.map((link) => (link.id === id ? { ...link, [field]: value } : link)));
