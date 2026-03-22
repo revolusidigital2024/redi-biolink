@@ -543,8 +543,8 @@ export default function App() {
     };
 
     const getHoverShadowCSS = () => {
-      if (profile.cardShadow === 'none') return 'box-shadow: none; border-color: ' + profile.btnColor + ';';
-      if (profile.cardShadow === 'hard') return 'box-shadow: 6px 6px 0px 0px rgba(0,0,0,1); transform: translate(-2px, -2px);';
+      if (profile.cardShadow === 'none') return 'border-color: ' + profile.btnColor + ';';
+      if (profile.cardShadow === 'hard') return 'box-shadow: 6px 6px 0px 0px rgba(0,0,0,1);';
       return 'box-shadow: 0 8px 20px rgba(0,0,0,0.08); border-color: ' + profile.btnColor + ';';
     };
 
@@ -560,10 +560,20 @@ export default function App() {
     };
 
     const getHoverAnimCSS = () => {
-      if (profile.hoverAnimation === 'scale') return 'transform: scale(1.03);';
-      if (profile.hoverAnimation === 'wiggle') return 'animation: wiggle 0.4s ease-in-out infinite;';
-      if (profile.hoverAnimation === 'glow') return `box-shadow: 0 0 20px ${profile.btnColor}; transform: translateY(-1px);`;
-      return 'transform: translateY(-3px);'; // translate
+      const isHardShadow = profile.cardShadow === 'hard';
+      const baseTransform = isHardShadow ? 'translate(-2px, -2px)' : '';
+      
+      if (profile.hoverAnimation === 'scale') {
+        return `transform: ${baseTransform} scale(1.03);`;
+      }
+      if (profile.hoverAnimation === 'wiggle') {
+        return `animation: wiggle 0.4s ease-in-out infinite; ${baseTransform ? `transform: ${baseTransform};` : ''}`;
+      }
+      if (profile.hoverAnimation === 'glow') {
+        return `box-shadow: 0 0 20px ${profile.btnColor}; transform: ${baseTransform} translateY(-1px);`;
+      }
+      // default: translate
+      return `transform: ${baseTransform} translateY(-4px);`;
     };
 
     const getBgCSS = () => {
@@ -572,7 +582,8 @@ export default function App() {
       background-image: url('${profile.bgImageUrl}') !important;
       background-size: cover !important;
       background-position: center !important;
-      background-attachment: fixed !important;`;
+      background-attachment: fixed !important;
+      background-repeat: no-repeat !important;`;
     };
 
     const xmlCategories = ['All', ...Array.from(new Set(links.map(l => l.category).filter(Boolean))) as string[]];
@@ -618,9 +629,9 @@ export default function App() {
     }
     .bio-container {
       width: 100%;
-      max-width: 480px;
+      max-width: 400px;
       text-align: center;
-      padding: 3rem 1.5rem;
+      padding: 3.5rem 1.25rem;
       margin: 0 auto;
     }
     .avatar {
