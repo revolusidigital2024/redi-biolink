@@ -549,6 +549,7 @@ export default function App() {
     };
 
     const getOverlayCSS = () => {
+      if (!profile.bgImageUrl) return 'display: none;';
       let css = '';
       if (profile.bgOverlay === 'dark') css += 'background-color: rgba(0,0,0,0.5); ';
       if (profile.bgOverlay === 'light') css += 'background-color: rgba(255,255,255,0.5); ';
@@ -566,12 +567,12 @@ export default function App() {
     };
 
     const getBgCSS = () => {
-      if (!profile.bgImageUrl) return `background-color: ${profile.bgColor};`;
-      return `background-color: ${profile.bgColor};
-      background-image: url('${profile.bgImageUrl}');
-      background-size: cover;
-      background-position: center;
-      background-attachment: fixed;`;
+      if (!profile.bgImageUrl) return `background-color: ${profile.bgColor} !important;`;
+      return `background-color: ${profile.bgColor} !important;
+      background-image: url('${profile.bgImageUrl}') !important;
+      background-size: cover !important;
+      background-position: center !important;
+      background-attachment: fixed !important;`;
     };
 
     const xmlCategories = ['All', ...Array.from(new Set(links.map(l => l.category).filter(Boolean))) as string[]];
@@ -586,6 +587,12 @@ export default function App() {
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;700&amp;family=Playfair+Display:wght@400;600;700&amp;family=Quicksand:wght@400;600;700&amp;display=swap');
   </style>
   <b:skin><![CDATA[
+    /* Reset Blogger Defaults */
+    #navbar-iframe { display: none !important; }
+    .status-msg-border { display: none !important; }
+    .quickedit { display: none !important; }
+    .navbar { display: none !important; }
+    
     /* CSS Reset & Custom Styles */
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -976,16 +983,19 @@ export default function App() {
   ${settings.googleAnalyticsId ? `
   <!-- Google tag (gtag.js) -->
   <script async="async" src="https://www.googletagmanager.com/gtag/js?id=${settings.googleAnalyticsId}"></script>
-  <script>
+  <script type='text/javascript'>
+  //<![CDATA[
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
     gtag('config', '${settings.googleAnalyticsId}');
+  //]]>
   </script>
   ` : ''}
   ${settings.metaPixelId ? `
   <!-- Meta Pixel Code -->
-  <script>
+  <script type='text/javascript'>
+  //<![CDATA[
   !function(f,b,e,v,n,t,s)
   {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
   n.callMethod.apply(n,arguments):n.queue.push(arguments)};
@@ -996,6 +1006,7 @@ export default function App() {
   'https://connect.facebook.net/en_US/fbevents.js');
   fbq('init', '${settings.metaPixelId}');
   fbq('track', 'PageView');
+  //]]>
   </script>
   <noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=${settings.metaPixelId}&amp;ev=PageView&amp;noscript=1" /></noscript>
   <!-- End Meta Pixel Code -->
@@ -1109,13 +1120,14 @@ export default function App() {
               }
             }).join('\n            ')}
           </div>
-          <div class="watermark">&amp;copy; 2024 - 2026 <a href="https://www.redi.web.id/" target="_blank" rel="noopener noreferrer">ReDi (Revolusi Digital)</a></div>
+          <div class="watermark">&#169; 2024 - 2026 <a href="https://www.redi.web.id/" target="_blank" rel="noopener noreferrer">ReDi (Revolusi Digital)</a></div>
   </div>
 
   <!-- Dummy section required by Blogger to validate the template -->
   <b:section id='dummy' showaddelement='false'/>
 
-  <script>
+  <script type='text/javascript'>
+    //<![CDATA[
     document.addEventListener('DOMContentLoaded', function() {
       // Drag-to-scroll functionality for PC users
       const tracks = document.querySelectorAll('.carousel-track');
@@ -1206,6 +1218,7 @@ export default function App() {
         });
       }
     });
+    //]]>
   </script>
   ${settings.histatsCode ? `
   <!-- Histats Code -->
