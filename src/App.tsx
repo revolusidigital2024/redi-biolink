@@ -542,10 +542,54 @@ export default function App() {
       return 'box-shadow: 0 4px 12px rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.05);';
     };
 
-    const getHoverShadowCSS = () => {
-      if (profile.cardShadow === 'none') return 'border-color: ' + profile.btnColor + ';';
-      if (profile.cardShadow === 'hard') return 'box-shadow: 6px 6px 0px 0px rgba(0,0,0,1);';
-      return 'box-shadow: 0 8px 20px rgba(0,0,0,0.08); border-color: ' + profile.btnColor + ';';
+    const getHoverStyles = (isCard = false) => {
+      let transform = '';
+      let boxShadow = '';
+      let animation = '';
+      let borderColor = '';
+      
+      const isHardShadow = profile.cardShadow === 'hard';
+      const baseTransform = isHardShadow ? 'translate(-2px, -2px)' : '';
+      
+      // 1. Animation Logic - Increased Intensity
+      if (profile.hoverAnimation === 'scale') {
+        transform = `${baseTransform} scale(1.08)`;
+      } else if (profile.hoverAnimation === 'wiggle') {
+        animation = 'wiggle 0.4s ease-in-out infinite';
+        transform = baseTransform;
+      } else if (profile.hoverAnimation === 'glow') {
+        boxShadow = `0 0 35px ${profile.btnColor}`;
+        transform = `${baseTransform} scale(1.05) translateY(-3px)`;
+      } else {
+        // default: translate
+        transform = `${baseTransform} translateY(-10px)`;
+      }
+      
+      // 2. Shadow & Border Logic
+      if (profile.cardShadow === 'hard') {
+        const hardShadow = '12px 12px 0px 0px rgba(0,0,0,1)';
+        boxShadow = boxShadow ? `${boxShadow}, ${hardShadow}` : hardShadow;
+        borderColor = '#000000';
+      } else if (profile.cardShadow === 'soft') {
+        const softShadow = '0 25px 50px rgba(0,0,0,0.25)';
+        boxShadow = boxShadow ? `${boxShadow}, ${softShadow}` : softShadow;
+        borderColor = profile.btnColor;
+      } else {
+        // none - still add a subtle shadow on hover for clarity
+        boxShadow = '0 10px 20px rgba(0,0,0,0.1)';
+        borderColor = profile.btnColor;
+      }
+      
+      let css = '';
+      if (transform) css += `transform: ${transform} !important; `;
+      if (boxShadow) css += `box-shadow: ${boxShadow} !important; `;
+      if (animation) css += `animation: ${animation} !important; `;
+      if (borderColor) css += `border-color: ${borderColor} !important; border-width: 2px !important; `;
+      css += `filter: brightness(0.8) saturate(1.5) !important; `;
+      css += `text-shadow: 0 2px 4px rgba(0,0,0,0.2) !important; `;
+      css += `z-index: 50 !important; `;
+      
+      return css;
     };
 
     const getOverlayCSS = () => {
@@ -557,23 +601,6 @@ export default function App() {
       if (profile.bgBlur === 'md') css += 'backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); ';
       if (profile.bgBlur === 'lg') css += 'backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); ';
       return css;
-    };
-
-    const getHoverAnimCSS = () => {
-      const isHardShadow = profile.cardShadow === 'hard';
-      const baseTransform = isHardShadow ? 'translate(-2px, -2px)' : '';
-      
-      if (profile.hoverAnimation === 'scale') {
-        return `transform: ${baseTransform} scale(1.03);`;
-      }
-      if (profile.hoverAnimation === 'wiggle') {
-        return `animation: wiggle 0.4s ease-in-out infinite; ${baseTransform ? `transform: ${baseTransform};` : ''}`;
-      }
-      if (profile.hoverAnimation === 'glow') {
-        return `box-shadow: 0 0 20px ${profile.btnColor}; transform: ${baseTransform} translateY(-1px);`;
-      }
-      // default: translate
-      return `transform: ${baseTransform} translateY(-4px);`;
     };
 
     const getBgCSS = () => {
@@ -745,14 +772,13 @@ export default function App() {
       border-radius: ${borderRadius};
       font-weight: 600;
       font-size: 1rem;
-      transition: all 0.2s ease;
+      transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      will-change: transform, box-shadow;
       ${getShadowCSS()}
       position: relative;
     }
     .link-btn:hover {
-      ${getHoverAnimCSS()}
-      ${getHoverShadowCSS()}
-      filter: brightness(1.1);
+      ${getHoverStyles()}
     }
 
     /* Rich Product Card Link */
@@ -764,13 +790,13 @@ export default function App() {
       text-decoration: none;
       border-radius: ${borderRadius};
       padding: 0.75rem;
-      transition: all 0.2s ease;
+      transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      will-change: transform, box-shadow;
       ${getShadowCSS()}
       position: relative;
     }
     .link-card:hover {
-      ${getHoverAnimCSS()}
-      ${getHoverShadowCSS()}
+      ${getHoverStyles(true)}
     }
     .link-card-img {
       width: 70px;
@@ -888,10 +914,11 @@ export default function App() {
       text-decoration: none;
       display: flex;
       flex-direction: column;
-      transition: transform 0.2s ease;
+      transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      will-change: transform, box-shadow;
     }
     .carousel-item:hover {
-      ${getHoverAnimCSS()}
+      ${getHoverStyles(true)}
     }
     .carousel-img {
       width: 100%;
@@ -1247,16 +1274,22 @@ export default function App() {
   };
 
   const getPreviewShadowClass = () => {
-    if (profile.cardShadow === 'none') return 'shadow-none border border-gray-300';
-    if (profile.cardShadow === 'hard') return 'shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] border-2 border-black';
-    return 'shadow-sm border border-black/5'; // soft
+    if (profile.cardShadow === 'none') return 'shadow-none border border-black/10';
+    if (profile.cardShadow === 'hard') return 'shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] border-2 border-black';
+    return 'shadow-[0_8px_20px_rgba(0,0,0,0.06)] border border-black/5'; // soft
   };
 
   const getPreviewHoverAnimClass = () => {
-    if (profile.hoverAnimation === 'scale') return 'preview-hover-scale';
-    if (profile.hoverAnimation === 'wiggle') return 'preview-hover-wiggle';
-    if (profile.hoverAnimation === 'glow') return 'preview-hover-glow';
-    return 'preview-hover-translate';
+    let classes = '';
+    if (profile.hoverAnimation === 'scale') classes = 'preview-hover-scale';
+    else if (profile.hoverAnimation === 'wiggle') classes = 'preview-hover-wiggle';
+    else if (profile.hoverAnimation === 'glow') classes = 'preview-hover-glow';
+    else classes = 'preview-hover-translate';
+
+    if (profile.cardShadow === 'soft') classes += ' preview-hover-shadow-soft';
+    if (profile.cardShadow === 'hard') classes += ' preview-hover-shadow-hard';
+    
+    return classes;
   };
 
   return (
@@ -2165,10 +2198,12 @@ export default function App() {
               style={{ fontFamily: profile.fontFamily }}
             >
               <style>{`
-                .preview-hover-translate:hover { transform: translateY(-4px); }
-                .preview-hover-scale:hover { transform: scale(1.03); }
-                .preview-hover-wiggle:hover { animation: wiggle 0.4s ease-in-out infinite; }
-                .preview-hover-glow:hover { box-shadow: 0 0 20px ${profile.btnColor}; transform: translateY(-1px); }
+                .preview-hover-translate:hover { transform: translateY(-10px) !important; filter: brightness(0.8) saturate(1.5) !important; z-index: 50 !important; text-shadow: 0 2px 4px rgba(0,0,0,0.2) !important; }
+                .preview-hover-scale:hover { transform: scale(1.08) !important; filter: brightness(0.8) saturate(1.5) !important; z-index: 50 !important; text-shadow: 0 2px 4px rgba(0,0,0,0.2) !important; }
+                .preview-hover-wiggle:hover { animation: wiggle 0.4s ease-in-out infinite !important; filter: brightness(0.8) saturate(1.5) !important; z-index: 50 !important; text-shadow: 0 2px 4px rgba(0,0,0,0.2) !important; }
+                .preview-hover-glow:hover { box-shadow: 0 0 35px ${profile.btnColor} !important; transform: scale(1.05) translateY(-3px) !important; filter: brightness(0.8) saturate(1.5) !important; z-index: 50 !important; text-shadow: 0 2px 4px rgba(0,0,0,0.2) !important; }
+                .preview-hover-shadow-soft:hover { box-shadow: 0 25px 50px rgba(0,0,0,0.25) !important; border-color: ${profile.btnColor} !important; border-width: 2px !important; }
+                .preview-hover-shadow-hard:hover { box-shadow: 12px 12px 0px 0px rgba(0,0,0,1) !important; border-color: #000 !important; border-width: 2px !important; }
                 @keyframes wiggle {
                   0%, 100% { transform: rotate(-3deg); }
                   50% { transform: rotate(3deg); }
