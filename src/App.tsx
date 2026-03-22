@@ -1096,7 +1096,15 @@ export default function App() {
             <a href="${finalUrl}" target="_blank" rel="noopener noreferrer" class="link-btn link-item-container" ${categoryAttr} ${titleAttr} ${pinnedAttr}>
               ${pinBadgeHtml}
               ${badgeHtml}
-              ${escapeXML(l.title)}
+              <div style="display: flex; flex-direction: column; align-items: center; gap: 4px;">
+                <span>${escapeXML(l.title)}</span>
+                ${(l.rating || l.soldCount) ? `
+                <div class="item-stats" style="justify-content: center; margin-top: 2px; color: #fff; opacity: 0.9;">
+                  ${l.rating ? `<div class="item-rating" style="color: #fbbf24;">⭐ ${escapeXML(l.rating)}</div>` : ''}
+                  ${l.soldCount ? `<div class="item-sold" style="color: #fff;">${escapeXML(l.soldCount)} Terjual</div>` : ''}
+                </div>
+                ` : ''}
+              </div>
             </a>`;
               }
             }).join('\n            ')}
@@ -1616,6 +1624,9 @@ export default function App() {
                                                 <input type="text" value={item.rating || ''} onChange={(e) => handleUpdateCarouselItem(link.id, item.id, 'rating', e.target.value)} className="w-full px-2 py-1.5 border border-gray-200 rounded text-xs focus:ring-1 focus:ring-blue-500 outline-none" placeholder="Rating" />
                                               </div>
                                               <div className="col-span-2">
+                                                <input type="text" value={item.soldCount || ''} onChange={(e) => handleUpdateCarouselItem(link.id, item.id, 'soldCount', e.target.value)} className="w-full px-2 py-1.5 border border-gray-200 rounded text-xs focus:ring-1 focus:ring-blue-500 outline-none" placeholder="Terjual (Cth: 1RB+)" />
+                                              </div>
+                                              <div className="col-span-2">
                                                 <input type="text" value={item.url} onChange={(e) => handleUpdateCarouselItem(link.id, item.id, 'url', e.target.value)} className="w-full px-2 py-1.5 border border-gray-200 rounded text-xs focus:ring-1 focus:ring-blue-500 outline-none" placeholder="Link (https://...)" />
                                               </div>
                                               <div className="col-span-2">
@@ -1656,6 +1667,26 @@ export default function App() {
                                           onChange={(e) => handleUpdateLink(link.id, 'badge', e.target.value)}
                                           className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-600 focus:ring-2 focus:ring-blue-500 outline-none bg-gray-50 focus:bg-white"
                                           placeholder="Cth: HOT, PROMO"
+                                        />
+                                      </div>
+                                      <div>
+                                        <label className="text-xs font-semibold text-gray-500 mb-1 flex items-center gap-1">⭐ Rating</label>
+                                        <input
+                                          type="text"
+                                          value={link.rating || ''}
+                                          onChange={(e) => handleUpdateLink(link.id, 'rating', e.target.value)}
+                                          className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-600 focus:ring-2 focus:ring-blue-500 outline-none bg-gray-50 focus:bg-white"
+                                          placeholder="Cth: 4.9"
+                                        />
+                                      </div>
+                                      <div>
+                                        <label className="text-xs font-semibold text-gray-500 mb-1 flex items-center gap-1">📦 Terjual</label>
+                                        <input
+                                          type="text"
+                                          value={link.soldCount || ''}
+                                          onChange={(e) => handleUpdateLink(link.id, 'soldCount', e.target.value)}
+                                          className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-600 focus:ring-2 focus:ring-blue-500 outline-none bg-gray-50 focus:bg-white"
+                                          placeholder="Cth: 1RB+"
                                         />
                                       </div>
                                     </>
@@ -2326,7 +2357,15 @@ export default function App() {
                             {link.badge}
                           </div>
                         )}
-                        {link.title}
+                        <div className="flex flex-col items-center gap-1">
+                          <span>{link.title}</span>
+                          {(link.rating || link.soldCount) && (
+                            <div className="flex items-center justify-center gap-1.5 text-[0.7rem] font-medium opacity-90">
+                              {link.rating && <div className="text-amber-300 font-bold flex items-center">⭐ {link.rating}</div>}
+                              {link.soldCount && <div className="text-white">{link.soldCount} Terjual</div>}
+                            </div>
+                          )}
+                        </div>
                       </div>
                     );
                   })}
