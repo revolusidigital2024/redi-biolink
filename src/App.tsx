@@ -119,6 +119,14 @@ type Profile = {
   bgBlur: 'none' | 'sm' | 'md' | 'lg';
   cardShadow: 'none' | 'soft' | 'hard';
   hoverAnimation: 'translate' | 'scale' | 'wiggle' | 'glow';
+  socialLinks: {
+    instagram?: string;
+    youtube?: string;
+    tiktok?: string;
+    facebook?: string;
+    twitter?: string;
+    whatsapp?: string;
+  };
 };
 
 const SortableLinkItem = React.memo(({ link, index, children }: { link: LinkItem, index: number, children: React.ReactNode }) => {
@@ -361,7 +369,15 @@ export default function App() {
     bgOverlay: 'dark',
     bgBlur: 'none',
     cardShadow: 'soft',
-    hoverAnimation: 'translate'
+    hoverAnimation: 'translate',
+    socialLinks: {
+      instagram: '',
+      youtube: '',
+      tiktok: '',
+      facebook: '',
+      twitter: '',
+      whatsapp: ''
+    }
   });
 
   const [links, setLinks] = useState<LinkItem[]>([
@@ -553,30 +569,30 @@ export default function App() {
       
       // 1. Animation Logic - Increased Intensity
       if (profile.hoverAnimation === 'scale') {
-        transform = `${baseTransform} scale(1.08)`;
+        transform = `${baseTransform} scale(1.12)`;
       } else if (profile.hoverAnimation === 'wiggle') {
-        animation = 'wiggle 0.4s ease-in-out infinite';
+        animation = 'wiggle 0.3s ease-in-out infinite';
         transform = baseTransform;
       } else if (profile.hoverAnimation === 'glow') {
-        boxShadow = `0 0 35px ${profile.btnColor}`;
-        transform = `${baseTransform} scale(1.05) translateY(-3px)`;
+        boxShadow = `0 0 45px ${profile.btnColor}88`;
+        transform = `${baseTransform} scale(1.06) translateY(-5px)`;
       } else {
         // default: translate
-        transform = `${baseTransform} translateY(-10px)`;
+        transform = `${baseTransform} translateY(-15px)`;
       }
       
       // 2. Shadow & Border Logic
       if (profile.cardShadow === 'hard') {
-        const hardShadow = '12px 12px 0px 0px rgba(0,0,0,1)';
+        const hardShadow = '16px 16px 0px 0px rgba(0,0,0,1)';
         boxShadow = boxShadow ? `${boxShadow}, ${hardShadow}` : hardShadow;
         borderColor = '#000000';
       } else if (profile.cardShadow === 'soft') {
-        const softShadow = '0 25px 50px rgba(0,0,0,0.25)';
+        const softShadow = '0 35px 70px rgba(0,0,0,0.35)';
         boxShadow = boxShadow ? `${boxShadow}, ${softShadow}` : softShadow;
         borderColor = profile.btnColor;
       } else {
         // none - still add a subtle shadow on hover for clarity
-        boxShadow = '0 10px 20px rgba(0,0,0,0.1)';
+        boxShadow = '0 15px 30px rgba(0,0,0,0.15)';
         borderColor = profile.btnColor;
       }
       
@@ -585,9 +601,9 @@ export default function App() {
       if (boxShadow) css += `box-shadow: ${boxShadow} !important; `;
       if (animation) css += `animation: ${animation} !important; `;
       if (borderColor) css += `border-color: ${borderColor} !important; border-width: 2px !important; `;
-      css += `filter: brightness(0.8) saturate(1.5) !important; `;
-      css += `text-shadow: 0 2px 4px rgba(0,0,0,0.2) !important; `;
-      css += `z-index: 50 !important; `;
+      css += `filter: brightness(1.1) saturate(1.2) !important; `;
+      css += `text-shadow: 0 2px 8px rgba(0,0,0,0.3) !important; `;
+      css += `z-index: 100 !important; `;
       
       return css;
     };
@@ -772,10 +788,11 @@ export default function App() {
       border-radius: ${borderRadius};
       font-weight: 600;
       font-size: 1rem;
-      transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-      will-change: transform, box-shadow;
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      will-change: transform, box-shadow, filter;
       ${getShadowCSS()}
       position: relative;
+      box-sizing: border-box;
     }
     .link-btn:hover {
       ${getHoverStyles()}
@@ -790,10 +807,11 @@ export default function App() {
       text-decoration: none;
       border-radius: ${borderRadius};
       padding: 0.75rem;
-      transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-      will-change: transform, box-shadow;
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      will-change: transform, box-shadow, filter;
       ${getShadowCSS()}
       position: relative;
+      box-sizing: border-box;
     }
     .link-card:hover {
       ${getHoverStyles(true)}
@@ -1003,6 +1021,45 @@ export default function App() {
     .watermark a:hover {
       text-decoration: underline;
     }
+    .social-icons {
+      display: flex;
+      justify-content: center;
+      gap: 1.25rem;
+      margin-top: 1.5rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+    .social-icon {
+      color: ${profile.textColor};
+      opacity: 0.8;
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      will-change: transform, box-shadow, filter;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background-color: ${profile.cardBgColor};
+      ${getShadowCSS()}
+      text-decoration: none;
+      box-sizing: border-box;
+    }
+    .social-icon:hover {
+      opacity: 1;
+      ${getHoverStyles()}
+      background-color: ${profile.btnColor};
+      color: #fff;
+    }
+    .social-icon svg {
+      width: 22px;
+      height: 22px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
     .pin-badge {
       position: absolute;
       top: -8px;
@@ -1056,6 +1113,15 @@ export default function App() {
     <img src="${escapeXML(profile.avatarUrl)}" alt="Avatar" class="avatar" />
           <h1 class="name">${escapeXML(profile.name)}</h1>
           <p class="bio">${escapeXML(profile.bio)}</p>
+
+          <div class="social-icons">
+            ${profile.socialLinks.instagram ? `<a href="${escapeXML(profile.socialLinks.instagram)}" target="_blank" rel="noopener noreferrer" class="social-icon" title="Instagram"><svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg></a>` : ''}
+            ${profile.socialLinks.youtube ? `<a href="${escapeXML(profile.socialLinks.youtube)}" target="_blank" rel="noopener noreferrer" class="social-icon" title="YouTube"><svg viewBox="0 0 24 24"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z"></path><polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"></polygon></svg></a>` : ''}
+            ${profile.socialLinks.tiktok ? `<a href="${escapeXML(profile.socialLinks.tiktok)}" target="_blank" rel="noopener noreferrer" class="social-icon" title="TikTok"><svg viewBox="0 0 24 24"><path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"></path></svg></a>` : ''}
+            ${profile.socialLinks.facebook ? `<a href="${escapeXML(profile.socialLinks.facebook)}" target="_blank" rel="noopener noreferrer" class="social-icon" title="Facebook"><svg viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg></a>` : ''}
+            ${profile.socialLinks.twitter ? `<a href="${escapeXML(profile.socialLinks.twitter)}" target="_blank" rel="noopener noreferrer" class="social-icon" title="Twitter"><svg viewBox="0 0 24 24"><path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path></svg></a>` : ''}
+            ${profile.socialLinks.whatsapp ? `<a href="${escapeXML(profile.socialLinks.whatsapp)}" target="_blank" rel="noopener noreferrer" class="social-icon" title="WhatsApp"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg></a>` : ''}
+          </div>
 
           <div class="search-container">
             <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
@@ -1260,7 +1326,7 @@ export default function App() {
   </script>
   ${settings.histatsCode ? `
   <!-- Histats Code -->
-  ${settings.histatsCode.replace(/&(?!amp;|#)/g, '&amp;')}
+  ${sanitizeForXML(settings.histatsCode)}
   <!-- End Histats Code -->
   ` : ''}
 </body>
@@ -1271,6 +1337,15 @@ export default function App() {
     navigator.clipboard.writeText(generateBloggerXML());
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const sanitizeForXML = (html: string) => {
+    if (!html) return '';
+    return html
+      .replace(/<img([^>]*?)(?<!\/)>/g, '<img$1 />') // Close <img> if not already closed
+      .replace(/<br(?!\s*\/)>/g, '<br />')           // Close <br> if not already closed
+      .replace(/<hr(?!\s*\/)>/g, '<hr />')           // Close <hr> if not already closed
+      .replace(/&(?!amp;|#|lt;|gt;|quot;|apos;)/g, '&amp;'); // Fix unescaped ampersands
   };
 
   const getPreviewShadowClass = () => {
@@ -1434,6 +1509,38 @@ export default function App() {
                       </option>
                     ))}
                   </select>
+                </div>
+              </div>
+
+              <div className="pt-4 border-t border-gray-100">
+                <h3 className="text-sm font-bold text-gray-900 mb-4 flex items-center gap-2">
+                  <LinkIcon size={16} className="text-blue-600" /> Social Media Links
+                </h3>
+                <div className="grid grid-cols-1 gap-4">
+                  {[
+                    { id: 'instagram', label: 'Instagram', icon: <Instagram size={16} />, placeholder: 'https://instagram.com/username' },
+                    { id: 'youtube', label: 'YouTube', icon: <Youtube size={16} />, placeholder: 'https://youtube.com/@channel' },
+                    { id: 'tiktok', label: 'TikTok', icon: <Music size={16} />, placeholder: 'https://tiktok.com/@username' },
+                    { id: 'facebook', label: 'Facebook', icon: <Facebook size={16} />, placeholder: 'https://facebook.com/username' },
+                    { id: 'twitter', label: 'Twitter / X', icon: <Twitter size={16} />, placeholder: 'https://twitter.com/username' },
+                    { id: 'whatsapp', label: 'WhatsApp', icon: <MessageCircle size={16} />, placeholder: 'https://wa.me/628123...' },
+                  ].map((social) => (
+                    <div key={social.id}>
+                      <label className="flex items-center gap-2 text-xs font-medium text-gray-600 mb-1.5">
+                        {social.icon} {social.label}
+                      </label>
+                      <input
+                        type="text"
+                        value={profile.socialLinks[social.id as keyof typeof profile.socialLinks] || ''}
+                        onChange={(e) => setProfile({ 
+                          ...profile, 
+                          socialLinks: { ...profile.socialLinks, [social.id]: e.target.value } 
+                        })}
+                        className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                        placeholder={social.placeholder}
+                      />
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
@@ -2198,15 +2305,23 @@ export default function App() {
               style={{ fontFamily: profile.fontFamily }}
             >
               <style>{`
-                .preview-hover-translate:hover { transform: translateY(-10px) !important; filter: brightness(0.8) saturate(1.5) !important; z-index: 50 !important; text-shadow: 0 2px 4px rgba(0,0,0,0.2) !important; }
-                .preview-hover-scale:hover { transform: scale(1.08) !important; filter: brightness(0.8) saturate(1.5) !important; z-index: 50 !important; text-shadow: 0 2px 4px rgba(0,0,0,0.2) !important; }
-                .preview-hover-wiggle:hover { animation: wiggle 0.4s ease-in-out infinite !important; filter: brightness(0.8) saturate(1.5) !important; z-index: 50 !important; text-shadow: 0 2px 4px rgba(0,0,0,0.2) !important; }
-                .preview-hover-glow:hover { box-shadow: 0 0 35px ${profile.btnColor} !important; transform: scale(1.05) translateY(-3px) !important; filter: brightness(0.8) saturate(1.5) !important; z-index: 50 !important; text-shadow: 0 2px 4px rgba(0,0,0,0.2) !important; }
-                .preview-hover-shadow-soft:hover { box-shadow: 0 25px 50px rgba(0,0,0,0.25) !important; border-color: ${profile.btnColor} !important; border-width: 2px !important; }
-                .preview-hover-shadow-hard:hover { box-shadow: 12px 12px 0px 0px rgba(0,0,0,1) !important; border-color: #000 !important; border-width: 2px !important; }
+                .preview-hover-translate:hover { transform: translateY(-15px) !important; filter: brightness(1.1) saturate(1.2) !important; z-index: 100 !important; text-shadow: 0 2px 8px rgba(0,0,0,0.3) !important; }
+                .preview-hover-scale:hover { transform: scale(1.12) !important; filter: brightness(1.1) saturate(1.2) !important; z-index: 100 !important; text-shadow: 0 2px 8px rgba(0,0,0,0.3) !important; }
+                .preview-hover-wiggle:hover { animation: wiggle 0.3s ease-in-out infinite !important; filter: brightness(1.1) saturate(1.2) !important; z-index: 100 !important; text-shadow: 0 2px 8px rgba(0,0,0,0.3) !important; }
+                .preview-hover-glow:hover { box-shadow: 0 0 45px ${profile.btnColor}88 !important; transform: scale(1.06) translateY(-5px) !important; filter: brightness(1.1) saturate(1.2) !important; z-index: 100 !important; text-shadow: 0 2px 8px rgba(0,0,0,0.3) !important; }
+                .preview-hover-shadow-soft:hover { box-shadow: 0 35px 70px rgba(0,0,0,0.35) !important; border-color: ${profile.btnColor} !important; border-width: 2px !important; }
+                .preview-hover-shadow-hard:hover { box-shadow: 16px 16px 0px 0px rgba(0,0,0,1) !important; border-color: #000 !important; border-width: 2px !important; }
                 @keyframes wiggle {
                   0%, 100% { transform: rotate(-3deg); }
                   50% { transform: rotate(3deg); }
+                }
+                .preview-social-icon {
+                  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                }
+                .preview-social-icon:hover {
+                  background-color: ${profile.btnColor} !important;
+                  color: #fff !important;
+                  opacity: 1 !important;
                 }
               `}</style>
               <div className="flex flex-col items-center px-5 py-14 min-h-full" style={{ color: profile.textColor }}>
@@ -2220,7 +2335,30 @@ export default function App() {
                   }}
                 />
                 <h1 className="text-2xl font-extrabold mb-1 text-center tracking-tight">{profile.name}</h1>
-                <p className="text-[0.95rem] opacity-80 mb-6 text-center whitespace-pre-wrap leading-relaxed">{profile.bio}</p>
+                <p className="text-[0.95rem] opacity-80 mb-4 text-center whitespace-pre-wrap leading-relaxed">{profile.bio}</p>
+
+                {/* Social Icons Preview */}
+                <div className="flex justify-center gap-4 mb-8 flex-wrap">
+                  {Object.entries(profile.socialLinks).map(([platform, url]) => {
+                    if (!url) return null;
+                    const Icon = platform === 'instagram' ? Instagram : 
+                                 platform === 'youtube' ? Youtube : 
+                                 platform === 'facebook' ? Facebook : 
+                                 platform === 'twitter' ? Twitter : 
+                                 platform === 'whatsapp' ? MessageCircle : 
+                                 platform === 'tiktok' ? Music : null;
+                    if (!Icon) return null;
+                    return (
+                      <div 
+                        key={platform}
+                        className={`preview-social-icon w-10 h-10 rounded-full flex items-center justify-center opacity-80 ${getPreviewHoverAnimClass()} ${getPreviewShadowClass()}`}
+                        style={{ backgroundColor: profile.cardBgColor, color: profile.textColor }}
+                      >
+                        <Icon size={20} />
+                      </div>
+                    );
+                  })}
+                </div>
 
                 <div className="w-full mb-6">
                   <div className="relative group">
